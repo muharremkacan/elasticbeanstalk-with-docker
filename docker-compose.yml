@@ -1,0 +1,33 @@
+version: "3.9"
+    
+services:
+  db:
+    image: 609374022227.dkr.ecr.us-east-1.amazonaws.com/mysql:8.0
+    volumes:
+      - db_data:/var/lib/mysql
+      - "${EB_LOG_BASE_DIR}/db:/var/log/mysql"
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: wordpress1234
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: wordpress12
+    
+  wordpress:
+    depends_on:
+      - db
+    image: 609374022227.dkr.ecr.us-east-1.amazonaws.com/wordpress:latest
+    volumes:
+      - wordpress_data:/var/www/html
+      - "${EB_LOG_BASE_DIR}/wordpress:/var/log/wordpress"
+    ports:
+      - "80:80"
+    restart: always
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_USER: admin
+      WORDPRESS_DB_PASSWORD: wordpress12
+      WORDPRESS_DB_NAME: wordpress
+volumes:
+  db_data: {}
+  wordpress_data: {}
